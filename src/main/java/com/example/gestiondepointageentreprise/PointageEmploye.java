@@ -3,6 +3,7 @@ package com.example.gestiondepointageentreprise;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PointageEmploye {
@@ -74,5 +75,14 @@ public class PointageEmploye {
         }
 
       return false;
+    }
+
+    public void addAllDayOfWork(PointageEmploye pointage, List<LocalDate>dayOff, LocalDate startDate, LocalDate endDate){
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)){
+            DayOfWeek dayOfWeek = date.getDayOfWeek();
+            if(!dayOff.contains(date)){
+                pointage.addDayWork(date);
+            }
+        }
     }
 }

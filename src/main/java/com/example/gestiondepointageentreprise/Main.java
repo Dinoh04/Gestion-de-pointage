@@ -1,45 +1,41 @@
 package com.example.gestiondepointageentreprise;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
+ private static final Logger log = LoggerFactory.getLogger(Main.class);
     public static void main(String[] args) {
 
      List<LocalDate> allDayOff = new ArrayList<>();
+     allDayOff.add(LocalDate.of(2024, 6, 17));
+     allDayOff.add(LocalDate.of(2024, 6, 25));
+     allDayOff.add(LocalDate.of(2024, 6, 26));
+
         Salaire salaire = new Salaire(110000.0);
        Categories categories = new Categories("Guardian",56,200.0,0.0);
-        Employe ben = new Employe("Endrick","Evan",78952, LocalDate.of(2000, Month.JANUARY, 8),LocalDate.now(),LocalDate.of(2026, Month.JANUARY,8),salaire,categories);
+        Employe Rakoto = new Employe("Rakoto","Ravo",78952, LocalDate.of(2000, Month.JANUARY, 8),LocalDate.now(),LocalDate.of(2026, Month.JANUARY,8),salaire,categories);
 
         Calendar calendrierjuin = new Calendar(2024, Month.JUNE);
+          calendrierjuin.setDayOff(allDayOff);
 
 
-        calendrierjuin.addDayOf(LocalDate.of(2024, 6, 17));
-        calendrierjuin.addDayOf(LocalDate.of(2024, 6, 25));
-        calendrierjuin.addDayOf(LocalDate.of(2024, 6, 26));
 
-        PointageEmploye pointage = new PointageEmploye(ben, calendrierjuin);
+        PointageEmploye pointage = new PointageEmploye(Rakoto, calendrierjuin);
 
-        pointage.addDayWork(LocalDate.of(2024, 6, 3));
-        pointage.addDayWork(LocalDate.of(2024,6,4));
-        pointage.addDayWork(LocalDate.of(2024, 6, 5));
-        pointage.addDayWork(LocalDate.of(2024, 6, 6));
-        pointage.addDayWork(LocalDate.of(2024,6,10));
-        pointage.addDayWork(LocalDate.of(2024,6,15));
-        pointage.addDayWork(LocalDate.of(2024,6,29));
-        pointage.addDayWork(LocalDate.of(2024,6,27));
-        pointage.addDayWork(LocalDate.of(2024,6,28));
-        pointage.addDayWork(LocalDate.of(2024,6,29));
-        pointage.addDayWork(LocalDate.of(2024,6,30));
+        pointage.addAllDayOfWork(pointage,allDayOff, LocalDate.of(2024, 6, 1), LocalDate.of(2024, 6, 30));
 
 
-        Double hourJuin = pointage.hourOfWork();
+        Double hourJune = pointage.hourOfWork();
 
         Double salaryJune = pointage.calculateSalary();
 
-        System.out.println("Heures travaillées en juin : " + hourJuin);
-        System.out.println("Salaire à payer pour Rakoto en juin : " + salaryJune);
+     log.info("Salaire à payer pour Rakoto en juin : {}", salaryJune);
+     log.info("Total des heures complétés en un mois : {}", hourJune);
     }
 }
