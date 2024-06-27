@@ -11,15 +11,21 @@ public class PointageEmploye {
     private Employe employe;
     private Map<LocalDate, Boolean> dayWork;
     private Calendar calendar;
+    private Double hoursPerDay;
 
-    public PointageEmploye(Employe employe, Calendar calendar) {
+    public PointageEmploye(Employe employe, Calendar calendar, Double hoursPerDay) {
         this.employe = employe;
         this.dayWork = new HashMap<>();
         this.calendar = calendar;
+        this.hoursPerDay = hoursPerDay;
     }
 
-    public void  addDayWork(LocalDate date){
-        dayWork.put(date, true);
+    public void  addDayWork(LocalDate date,boolean isNigthSwift){
+        dayWork.put(date, isNigthSwift);
+    }
+
+    public Double calculateHoursPerDay(){
+        return dayWork.size() * hoursPerDay;
     }
 
     public Double hourOfWork(){
@@ -28,60 +34,67 @@ public class PointageEmploye {
 
         for(LocalDate date : dayWork.keySet()){
             if(date.getMonthValue() == monthJune){
-                heureTotales += 8.0;
+                if (dayWork.get(date)){
+                    heureTotales += 14.0;
+                }
+            }else {
+                heureTotales += 10.0;
             }
         }
 
         return heureTotales;
     }
-    public Double calculateSalary(){
-        Double normalHours = 0.0;
-        Double bonusHours = 0.0;
-        Double overtime = 0.0;
-        Double totalSalary = 0.0;
+    public Double calculateSalary() {
+        double salary = 0.0;
 
-     for (LocalDate date : dayWork.keySet()){
-         if (dayWork.get(date)){
-           Double hourOfWork = 8.0;
-
-           if (hourOfWork <= 8.0){
-               normalHours += hourOfWork;
-           }else{
-               normalHours += 8.0;
-               overtime += hourOfWork - 8.0;
-           }
-           if (isBonusHours(date)){
-              bonusHours += hourOfWork;
-           }
+        for (LocalDate date : dayWork.keySet()){
+       if(!calendar.getDayOff().contains(date)){
+          salary += employe.getMontantDuSalaire().getSalaireBrut();
          }
-
-     }
-
-     Double  normalHourlyRate = employe.getMontantDuSalaire().getSalaireNet() / 160.0;
-     Double overtimeRate = normalHourlyRate * 1.3;
-     Double bonusHoursRate = normalHourlyRate * 1.5;
-      totalSalary = (normalHours * normalHourlyRate) + (overtime * overtimeRate) + (bonusHours * bonusHoursRate);
-
-      return totalSalary ;
+        }
+        return salary;
     }
 
-    public Boolean isBonusHours(LocalDate date){
-        if (calendar.getDayOff().contains(date)){
-            return true;
-        }
+    public double calculateSalaryWithIncrease(){
+        double salary = 0.0;
+        double salaryDaily = employe.getMontantDuSalaire().getSalaireBrut() / 7;
 
-        if (date.getDayOfWeek() == DayOfWeek.SUNDAY){
-            return true;
-        }
+        for (LocalDate date : dayWork.keySet()){
+            if (!calendar.getDayOff().contains(date)){
+                 salary += salaryDaily;
+            }else {
+                salary += salaryDaily * 1.3;
+            }
 
-      return false;
+        }
+        return salary;
     }
 
-    public void addAllDayOfWork(PointageEmploye pointage, List<LocalDate>dayOff, LocalDate startDate, LocalDate endDate){
+    public Double calculateSalaryWithOutDayOff (){
+        int dayWorks = (int) dayWork.keySet().stream()
+                .filter(date -> !calendar.getDayOff().contains(date))
+                .count();
+        int weekWorks = dayWorks / 7;
+        return (double) (weekWorks  * employe.getMontantDuSalaire().getSalaireBrut());
+    }
+
+    public double calculateSalaryWithBonus (){
+
+        int dayWorks = (int) dayWork.keySet().stream()
+                .filter(date -> !calendar.getDayOff().contains(date))
+                .count();
+
+        int weeksWorked = dayWorks / 7;
+        double normalSalary = weeksWorked * employe.getMontantDuSalaire().getSalaireBrut();
+        double salaryWithBonus = normalSalary * 1.3;
+        return salaryWithBonus;
+    }
+
+    public void addAllDayOfWork(PointageEmploye pointage, List<LocalDate>dayOff, LocalDate startDate, LocalDate endDate, boolean isNightShift){
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)){
             DayOfWeek dayOfWeek = date.getDayOfWeek();
             if(!dayOff.contains(date)){
-                pointage.addDayWork(date);
+                pointage.addDayWork(date,isNightShift);
             }
         }
     }

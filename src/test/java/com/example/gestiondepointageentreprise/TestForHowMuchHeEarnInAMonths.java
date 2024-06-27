@@ -14,11 +14,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class TestHowManyHoursWorked {
+public class TestForHowMuchHeEarnInAMonths {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
-
     @Test
-    public void testHoursWorkedByRakoto(){
+    public void testHowMuchHeEarsInAMonth(){
         LocalDate startDate = LocalDate.of(2024, Month.MAY, 26);
         LocalDate endDate = LocalDate.of(2024, Month.JULY, 6);
 
@@ -29,27 +28,20 @@ public class TestHowManyHoursWorked {
         Employe Rakoto = new Employe("Rakoto","Ravo",78952, LocalDate.of(2000, Month.JANUARY, 8),LocalDate.now(),LocalDate.of(2026, Month.JANUARY,8),salaire,categories);
         Employe Rabe = new Employe("Rabe", "Jean",85474,LocalDate.of(1999,Month.AUGUST,7),LocalDate.now(),LocalDate.of(2026,Month.AUGUST,7),salaire,categories);
 
+
         Calendar calendarJune = new Calendar(2024, Month.JUNE);
-        calendarJune.setDayOff(allDayOff);
 
         PointageEmploye pointageRakoto = new PointageEmploye(Rakoto, calendarJune,10.0);
-        PointageEmploye pointageRabe = new PointageEmploye(Rabe,calendarJune,14.0);
-
         pointageRakoto.addAllDayOfWork(pointageRakoto,allDayOff, startDate, endDate, false);
-        pointageRabe.addAllDayOfWork(pointageRabe, allDayOff,startDate,endDate, true);
 
-        Double hourJuneRakoto = pointageRakoto.calculateHoursPerDay();
-        Double hourJuneRabe = pointageRabe.calculateHoursPerDay();
+        Double rakotoSalary = pointageRakoto.calculateSalaryWithOutDayOff();
 
-        double hoursExpectedRakoto = 7 * 10 * 6;
+        double salaryExpected = 600000.0;
 
-        assertEquals(hoursExpectedRakoto, hourJuneRakoto , "The number of hours worked in June is incorrect.");
+        log.info("The salary earn by Rakoto in 6 weeks : {} ", rakotoSalary);
 
-        double hoursExpectedRabe = 7 * 14 * 6;
-        log.info("Nombre d'heures travaillées par Rakoto sur 6 semaines : {}", hourJuneRakoto);
-        log.info("Nombre d'heures travaillées par Rakoto sur 6 semaines : {}", hourJuneRabe);
+        assertEquals(salaryExpected, rakotoSalary, 0.01, "The salary earn by Rakoto in 6 weeks is incorrect");
 
 
-        assertEquals(hoursExpectedRabe, hourJuneRabe, "The number of hours worked in June is incorrect.");
     }
 }

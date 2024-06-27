@@ -26,9 +26,9 @@ public class Main {
 
 
 
-        PointageEmploye pointage = new PointageEmploye(Rakoto, calendrierjuin);
+        PointageEmploye pointage = new PointageEmploye(Rakoto, calendrierjuin,10.0);
 
-        pointage.addAllDayOfWork(pointage,allDayOff, LocalDate.of(2024, 6, 1), LocalDate.of(2024, 6, 30));
+        pointage.addAllDayOfWork(pointage,allDayOff, LocalDate.of(2024, 6, 1), LocalDate.of(2024, 6, 30),false);
 
 
         Double hourJune = pointage.hourOfWork();
